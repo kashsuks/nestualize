@@ -1,0 +1,18 @@
+{
+  "name": "nest-electron-starter",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "postinstall": "npx @electron/rebuild --force"
+  },
+  "dependencies": {
+    "node-pty": "^0.10.1",
+    "xterm": "^5.0.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.1",
+    "electron": "^29.0.0"
+  }
+}
