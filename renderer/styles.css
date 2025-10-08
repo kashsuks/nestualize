@@ -1,10 +1,19 @@
-:root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2}
+
+:root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#5865f2}
 html, body, #termWrap{height:100%;margin:0}
 body{font-family: Inter, system-ui, Arial;background: linear-gradient(180deg,var(--bg),#071023);color:#e6eef6}
 .wrap{display:flex;flex-direction:column;height:100vh}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:12px}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid rgba(255,255,255,0.1)}
 .title{margin:0;font-size:20px}
 .controls{display:flex;gap:8px;align-items:center}
 .controls input{padding:8px;border-radius:8px;border:none;width:140px}
-.controls button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+.controls button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;background:#5865f2;color:white;font-weight:500}
+.controls button:hover{background:#4752c4}
+
+.command-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:rgba(0,0,0,0.2);border-bottom:1px solid rgba(255,255,255,0.1)}
+.cmd-label{font-size:13px;color:var(--muted);margin-right:4px}
+.cmd-btn{padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#e6eef6;cursor:pointer;font-size:13px;font-family:monospace;transition:all 0.2s}
+.cmd-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--accent)}
+.cmd-btn:active{transform:scale(0.95)}
+
 #termWrap{flex:1;padding:12px}

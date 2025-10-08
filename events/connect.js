@@ -8,8 +8,12 @@ module.exports.init = (ipcMain, app) => {
         if (termProc) {
             try { termProc.kill() } catch (err) { console.error('killErr', err) }
         }
+
         const target = `${user}@hackclub.app`
         console.log('sshStart', target)
+
+        e.sender.send('pty-data', `Connecting to ${target}...\r\n`)
+
         try {
             termProc = pty.spawn('ssh', [target], {
                 name: 'xterm-color',
@@ -23,6 +27,7 @@ module.exports.init = (ipcMain, app) => {
             e.sender.send('pty-data', `\n[ssh spawn error] ${String(err)}\n`)
             return { started: false, err: String(err) }
         }
+
         termProc.on('data', (d) => {
             try { e.sender.send('pty-data', d) } catch(err) {}
             process.stdout.write(d) //show the output in console
@@ -46,6 +51,17 @@ module.exports.init = (ipcMain, app) => {
 
         return { started: true }
     })
-    ipcMain.on('pty-input', (e, txt) => { if (termProc) termProc.write(txt)})
-    ipcMain.handle('pty-resize', (e, { cols, rows }) => { if (termProc) termProc.resize(cols, rows); return { ok: true } })
+    ipcMain.on('pty-input', (e, txt) => { 
+        if (termProc) {
+            console.log('Sending input to PTY:', txt)
+            termProc.write(txt)
+        } else {
+            console.log('No active PTY process')
+        }
+    })
+
+    ipcMain.handle('pty-resize', (e, { cols, rows }) => {
+        if (termProc) termProc.resize(cols, rows)
+            return { ok: true } 
+    })
 }
