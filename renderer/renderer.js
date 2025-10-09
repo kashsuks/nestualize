@@ -21,6 +21,16 @@ btnStart.addEventListener('click', async () => {
     await window.nestApi.startSession(u)
 })
 
+//command button
+function sendCommand(cmd) {
+    window.nestApi.sendInput(cmd + '\r')
+}
+
+document.getElementById('cmd-ls')?.addEventListener('click', () => sendCommand('ls'))
+document.getElementById('cmd-pwd')?.addEventListener('click', () => sendCommand('pwd'))
+document.getElementById('cmd-whoami')?.addEventListener('click', () => sendCommand('whoami'))
+document.getElementById('cmd-clear')?.addEventListener('click', () => sendCommand('clear'))
+
 term.onData(d => window.nestApi.sendInput(d))
 window.nestApi.onData(d => term.write(d))
 

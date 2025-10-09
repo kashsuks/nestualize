@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nestualize</title>
-    <link rel="stylesheet" href="renderer/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/xterm/css/xterm.css">
 </head>
 <body>
@@ -17,9 +17,16 @@
                 <button id="btnStart">Start Nest</button>
             </div>
         </header>
+        <div class="command-bar">
+            <span class="cmd-label">Quick Commands:</span>
+            <button id="cmd-ls" class="cmd-btn">ls</button>
+            <button id="cmd-pwd" class="cmd-btn">pwd</button>
+            <button id="cmd-whoami" class="cmd-btn">whoami</button>
+            <button id="cmd-clear" class="cmd-btn">clear</button>
+        </div>
         <main id="termWrap"></main>
     </div>
     <script src="https://unpkg.com/xterm/lib/xterm.js"></script>
-    <script src="renderer/renderer.js"></script>
+    <script src="renderer.js"></script>
 </body>
 </html>
