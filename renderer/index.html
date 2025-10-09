@@ -8,23 +8,63 @@
     <link rel="stylesheet" href="https://unpkg.com/xterm/css/xterm.css">
 </head>
 <body>
-    <div class="wrap">
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h2 class="sidebar-title">Menu</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="terminal">
+                    <span class="nav-icon">▶</span> <!--Add the icon here-->
+                    <span class="nav-text">Terminal</span>
+                </button>
+                <button class="nav-item" data-view="directory">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Directory</span>
+                </button>
+            </nav>
+        </aside>
+    </div>
+    <div class="main-content">
+        <div class="view-container active" id="view-terminal">
+            <header class="bar">
+                <h1 class="title">Nestualize</h1>
+                <div class="controls">
+                    <input id="user" placeholder="username">
+                    <button id="btnSave">Save</button>
+                    <button id="btnStart">Start Nest</button>
+                </div>
+            </header>
+            <div class="command-bar">
+                <span class="cmd-label">Quick Commands:</span>
+                <button id="cmd-ls" class="cmd-btn">ls</button>
+                <button id="cmd-pwd" class="cmd-btn">pwd</button>
+                <button id="cmd-whoami" class="cmd-btn">whoami</button>
+                <button id="cmd-clear" class="cmd-btn">clear</button>
+            </div>
+            <main id="termWrap"></main>
+        </div>
+    </div>
+
+    <div class="view-container" id="view-directory">
         <header class="bar">
-            <h1 class="title">Nestualize</h1>
+            <h1 class="title">Directory Explorer</h1>
             <div class="controls">
-                <input id="user" placeholder="username">
-                <button id="btnSave">Save</button>
-                <button id="btnStart">Start Nest</button>
+                <button id="btnRefresh">Refresh</button>
             </div>
         </header>
-        <div class="command-bar">
-            <span class="cmd-label">Quick Commands:</span>
-            <button id="cmd-ls" class="cmd-btn">ls</button>
-            <button id="cmd-pwd" class="cmd-btn">pwd</button>
-            <button id="cmd-whoami" class="cmd-btn">whoami</button>
-            <button id="cmd-clear" class="cmd-btn">clear</button>
+        <div class="directory-container">
+            <div class="current-path" id="currentPath">~/</div>
+            <div class="directory-tree" id="directoryTree">
+                <div class="loading">Connect to view directory structure</div>
+            </div>
         </div>
-        <main id="termWrap"></main>
     </div>
     <script src="https://unpkg.com/xterm/lib/xterm.js"></script>
     <script src="renderer.js"></script>

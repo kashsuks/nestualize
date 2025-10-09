@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('nestApi', {
     startSession: (user) => ipcRenderer.invoke('conn-start', user),
     sendInput: (txt) => ipcRenderer.send('pty-input', txt),
     onData: (cb) => ipcRenderer.on('pty-data', (e, d) => cb(d)),
-    resize: (cols, rows) => ipcRenderer.invoke('pty-resize', { cols, rows })
+    resize: (cols, rows) => ipcRenderer.invoke('pty-resize', { cols, rows }),
+    getDirectory: (path) => ipcRenderer.invoke('get-directory', path)
 })
