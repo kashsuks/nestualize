@@ -1,5 +1,10 @@
 
-:root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#5865f2}
+:root {
+  --bg: #0f1724;
+  --card: #0b1220;
+  --muted: #9aa4b2;
+  --accent: #5865f2;
+}
 html, body, #termWrap{height:100%;margin:0}
 body{font-family: Inter, system-ui, Arial;background: linear-gradient(180deg,var(--bg),#071023);color:#e6eef6}
 .wrap{display:flex;flex-direction:column;height:100vh}
