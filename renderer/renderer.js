@@ -138,3 +138,141 @@ function loadDirectory(path) {
         }
     })
 }
+
+function renderDirectory(items, basePath) {
+    const tree = document.getElementById('directoryTree')
+    if (!item || items.length === 0) {
+        tree.innerHTML = '<div class="empty">Empty directory</div>'
+        return
+    }
+
+    tree.innerHTML = ''
+    const list = document.createElement('ul')
+    list.className = 'file-list'
+
+    items.forEach(item => {
+        const li = document.createElement('li')
+        li.className = 'file-item'
+
+        const itemBtn = document.createElement('button')
+        itemBtn.className = item.type === 'directory' ? 'file-btn folder' : 'file-btn file'
+
+        if (item.type === 'directory') {
+            const arrow = document.createElement('span')
+            arrow.className = 'arrow'
+            arrow.textContent = '▶'
+            itemBtn.appendChild(arrow)
+        }
+
+        const icon = document.createElement('span')
+        icon.className = 'icon'
+        icon.textContent = item.type === 'directory' ? '📁' : '📄'
+        itemBtn.appendChild(icon)
+
+        const name = document.createElement('span') // hi hackatime team!
+        name.className = 'name'
+        name.textContent = item.name
+        itemBtn.appendChild(name)
+
+        //type directory
+        if (item.type === 'directory') {
+            itemBtn.addEventListener('click', () => {
+                if (li.classList.contains('expanded')) { //apologies for the nested ifs
+                    li.classList.remove('expanded')
+                    const sublist = li.querySelector('ul')
+                    if (sublist) {
+                        sublist.remove()
+                    }
+                } else {
+                    li.classList.add('expanded')
+                    const newPath = basePath.endsWith('/') ? `${basePath}${item.name}` : `${basePath}/${item.name}`
+                    loadSubDirectory(li, newPath)
+                }
+            })
+        } else {
+            itemBtn.addEventListener('click', () => {
+                const filePath = basePath.endsWith('/') ? `${basePath}${item.name}` : `${basePath}/${item.name}`
+                sendCommand(`cat ${filePath}`)
+                //switch to terminal for output
+                document.querySelector('[data-view="terminal"]').click()
+            })
+        }
+
+        li.appendChild(itemBtn)
+        list.appendChild(li)
+    })
+
+    tree.appendChild(list)
+}
+
+function loadSubDirectory(parentLi, path) {
+    const loading = document.createElement('div')
+    loading.className = 'loading-sub'
+    loading.textContent = 'Loading...'
+    parentLi.appendChild(loading)
+
+    window.nestApi.getDirectory(path).then(result => {
+        loading.remove()
+        if (result.error) {
+            const error = document.createElement('div')
+            error.className = 'error-sub'
+            error.textContent = `Error: ${result.error}`
+            parentLi.appendChild(error)
+        } else if (result.items && result.items.length > 0) {
+            const sublist = document.createElement('ul')
+            sublist.className = 'file-list sub'
+
+            result.items.forEach(item => {
+                const li = document.createElement('li')
+                li.className = 'file-item'
+
+                const itemBtn = document.createElement('button')
+                itemBtn.className = item.type === 'directory' ? 'file-btn folder' : 'file-btn file'
+
+                if (item.type === 'directory') {
+                    const arrow = document.createElement('span')
+                    arrow.className = 'arrow'
+                    arrow.textContent = '▶'
+                    itemBtn.appendChild(arrow)
+                }
+
+                const icon = document.createElement('span')
+                icon.className = 'icon'
+                icon.textContent = item.type === 'directory' ? '📁' : '📄'
+                itemBtn.appendChild(icon)
+
+                const name = document.createElement('span')
+                name.className = 'name'
+                name.textContent = item.name
+                itemBtn.appendChild(name)
+
+                if (item.type === 'directory') {
+                    itemBtn.addEventListener('click', () => {
+                        if (li.classList.contains('expanded')) {
+                            li.classList.remove('expanded')
+                            const sublist = li.querySelector('ul') //sublists
+                            if (sublist) {
+                                sublist.remove() //cuz why the fuck do they exist
+                            }
+                        } else {
+                                li.classList.add('expanded')
+                                const newPath = path.endsWith('/') ? `${path}${item.name}` : `${path}/${item.name}`
+                                loadSubDirectory(li, newPath)
+                            }
+                    })
+                } else {
+                    itemBtn.addEventListener('click', () => {
+                        const filePath = path.endsWith('/') ? `${path}${item.name}`: `${path}/${item.name}`
+                        sendCommand(`cat ${filePath}`)
+                        document.querySelector('[data-view="terminal"]').click()
+                    })
+                }
+
+                li.appendChild(itemBtn)
+                sublist.appendChild(li)
+            })
+
+            parentLi.appendChild(sublist)
+        }
+    })
+}
