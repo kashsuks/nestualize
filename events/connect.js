@@ -61,7 +61,9 @@ module.exports.init = (ipcMain, app) => {
     })
 
     ipcMain.handle('pty-resize', (e, { cols, rows }) => {
-        if (termProc) termProc.resize(cols, rows)
-            return { ok: true } 
+        if (termProc) {
+            termProc.resize(cols, rows)
+            return { ok: true }
+        }
     })
 }
