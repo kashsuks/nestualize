@@ -10,7 +10,7 @@ let isConnected = false
 let currentPath = '~'
 
 term.open(wrap)
-term.focus
+term.focus()
 
 console.log('terminal init complete')
 
@@ -141,7 +141,7 @@ function loadDirectory(path) {
 
 function renderDirectory(items, basePath) {
     const tree = document.getElementById('directoryTree')
-    if (!item || items.length === 0) {
+    if (!items || items.length === 0) {
         tree.innerHTML = '<div class="empty">Empty directory</div>'
         return
     }
@@ -192,7 +192,7 @@ function renderDirectory(items, basePath) {
         } else {
             itemBtn.addEventListener('click', () => {
                 const filePath = basePath.endsWith('/') ? `${basePath}${item.name}` : `${basePath}/${item.name}`
-                sendCommand(`cat ${filePath}`)
+                sendCommand(`vim ${filePath}`)
                 //switch to terminal for output
                 document.querySelector('[data-view="terminal"]').click()
             })
@@ -263,7 +263,7 @@ function loadSubDirectory(parentLi, path) {
                 } else {
                     itemBtn.addEventListener('click', () => {
                         const filePath = path.endsWith('/') ? `${path}${item.name}`: `${path}/${item.name}`
-                        sendCommand(`cat ${filePath}`)
+                        sendCommand(`vim ${filePath}`)
                         document.querySelector('[data-view="terminal"]').click()
                     })
                 }
