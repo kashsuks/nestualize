@@ -97,13 +97,13 @@ body {
 
 @keyframes float {
     0%, 100% {
-        transform: translate(0, 0) scale(1);
+        transform: translate(-50%, -50%) translate(0, 0) scale(1);
     }
     33% {
-        transform: translate(50px, -50px) scale(1.1);
+        transform: translate(-50%, -50%) translate(50px, -50px) scale(1.1);
     }
     66% {
-        transform: translate(-50px, 50px) scale(0.9);
+        transform: translate(-50%, -50%) translate(-50px, 50px) scale(0.9);
     }
 }
 
