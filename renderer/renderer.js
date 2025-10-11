@@ -1,3 +1,15 @@
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('startup-overlay')
+
+    setTimeout(() => {
+        overlay.classList.add('fade-out')
+        setTimeout(() => {
+            overlay.classList.remove('active')
+            overlay.style.display = 'none'
+        }, 800)
+    }, 3000)
+})
+
 const { Terminal } = window;
 const term = new Terminal({ cols: 80, rows: 24 })
 const wrap = document.getElementById('termWrap')
