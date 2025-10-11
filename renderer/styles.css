@@ -1,8 +1,10 @@
 :root {
-    --bg: #0f1724;
-    --card: #0b1220;
-    --muted: #9aa4b2;
-    --accent: #5865f2;
+    --bg: #17171d;
+    --card: #252429;
+    --darkless: #252429;
+    --muted: #8492a6;
+    --accent: #5bc0de;
+    --primary: #ec3750;
     --sidebar-width: 240px;
     --sidebar-collapsed: 60px;
 }
@@ -18,9 +20,12 @@ html, body {
 }
 
 body {
-    font-family: Inter, system-ui, Arial;
-    background: linear-gradient(180deg, var(--bg), #071023);
-    color: #e6eef6;
+    font-family: "Phantom Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #17171d;
+    color: #ffffff;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .startup-overlay {
@@ -29,7 +34,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #0f1724 0%, #1a2332 50%, #0f1724 100%);
+    background: linear-gradient(135deg, #17171d 0%, #252429 50%, #17171d 100%);
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -65,7 +70,7 @@ body {
 .blob1 {
     width: 500px;
     height: 500px;
-    background: linear-gradient(45deg, #5865f2, #7289da);
+    background: linear-gradient(45deg, #ec3750, #5bc0de);
     top: -200px;
     left: -200px;
     animation-delay: 0s;
@@ -74,7 +79,7 @@ body {
 .blob2 {
     width: 400px;
     height: 400px;
-    background: linear-gradient(45deg, #7289da, #99aab5);
+    background: linear-gradient(45deg, #5bc0de, #338eda);
     bottom: -150px;
     right: -150px;
     animation-delay: 2s;
@@ -83,7 +88,7 @@ body {
 .blob3 {
     width: 450px;
     height: 450px;
-    background: linear-gradient(45deg, #5865f2, #4752c4);
+    background: linear-gradient(45deg, #ec3750, #338eda);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -140,18 +145,18 @@ body {
     width: 120px;
     height: 120px;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(88, 101, 242, 0.5));
+    filter: drop-shadow(0 0 20px rgba(236, 55, 80, 0.5));
 }
 
 .startup-title {
-    font-size: 72px;
+    font-size: 96px;
     font-weight: 700;
     margin: 0 0 40px 0;
-    background: linear-gradient(135deg, #fff 0%, #7289da 100%);
+    background: linear-gradient(135deg, #fff 0%, #5bc0de 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -2px;
+    letter-spacing: -0.009em;
     animation: shimmer 3s ease-in-out infinite;
 }
 
@@ -168,17 +173,17 @@ body {
     width: 300px;
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 99999px;
     overflow: hidden;
     margin: 0 auto;
 }
 
 .loading-progress {
     height: 100%;
-    background: linear-gradient(90deg, #5865f2, #7289da, #5865f2);
+    background: linear-gradient(90deg, #ec3750, #5bc0de, #ec3750);
     background-size: 200% 100%;
     animation: progress 2s ease-in-out, gradient 1.5s ease infinite;
-    border-radius: 10px;
+    border-radius: 99999px;
 }
 
 @keyframes progress {
@@ -238,8 +243,8 @@ body {
 
 .sidebar-title {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .hamburger {
@@ -250,19 +255,19 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    transition: transform 0.3s;
+    transition: transform 0.125s ease-in-out;
 }
 
 .hamburger span {
     width: 20px;
     height: 2px;
-    background: #e6eef6;
-    border-radius: 2px;
+    background: #ffffff;
+    border-radius: 4px;
     transition: all 0.3s;
 }
 
 .hamburger:hover {
-    transform: scale(1.1);
+    transform: scale(1.0625);
 }
 
 .sidebar-nav {
@@ -278,22 +283,25 @@ body {
     padding: 12px 16px;
     background: none;
     border: none;
-    color: #9aa4b2;
+    color: #8492a6;
     cursor: pointer;
     border-radius: 8px;
-    transition: all 0.2s;
+    transition: transform 0.125s ease-in-out, box-shadow 0.125s ease-in-out;
     text-align: left;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 400;
 }
 
 .nav-item:hover {
     background: rgba(255, 255, 255, 0.05);
-    color: #e6eef6;
+    color: #ffffff;
+    transform: scale(1.0625);
 }
 
 .nav-item.active {
-    background: var(--accent);
+    background: #ec3750;
     color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
 }
 
 .nav-icon {
@@ -323,15 +331,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: var(--card);
 }
 
 .title {
     margin: 0;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.009em;
 }
 
 .controls {
@@ -343,63 +352,71 @@ body {
 .controls input {
     padding: 8px 12px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: none;
     background: rgba(255, 255, 255, 0.05);
-    color: #e6eef6;
+    color: #ffffff;
     width: 160px;
-    font-size: 14px;
+    font-size: 16px;
+    font-family: "Phantom Sans", system-ui, sans-serif;
 }
 
 .controls input::placeholder {
-    color: var(--muted);
+    color: #8492a6;
 }
 
 .controls button {
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 99999px;
     border: none;
     cursor: pointer;
-    background: var(--accent);
+    background: #ec3750;
     color: white;
-    font-weight: 500;
-    font-size: 14px;
-    transition: background 0.2s;
+    font-weight: 700;
+    font-size: 16px;
+    transition: transform 0.125s ease-in-out, box-shadow 0.125s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
+    letter-spacing: 0.009em;
 }
 
 .controls button:hover {
-    background: #4752c4;
+    transform: scale(1.0625);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.0625), 0 8px 12px rgba(0, 0, 0, 0.125);
 }
 
 .command-bar {
     display: flex;
     gap: 8px;
     align-items: center;
-    padding: 10px 16px;
+    padding: 12px 16px;
     background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cmd-label {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
     margin-right: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.009em;
+    font-weight: 700;
 }
 
 .cmd-btn {
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.05);
-    color: #e6eef6;
+    color: #ffffff;
     cursor: pointer;
-    font-size: 13px;
-    font-family: monospace;
-    transition: all 0.2s;
+    font-size: 12px;
+    font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    transition: transform 0.125s ease-in-out, box-shadow 0.125s ease-in-out;
 }
 
 .cmd-btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent);
+    border-color: #5bc0de;
+    transform: scale(1.0625);
 }
 
 .cmd-btn:active {
@@ -408,9 +425,9 @@ body {
 
 #termWrap {
     flex: 1;
-    padding: 12px;
+    padding: 16px;
     overflow: auto;
-    background: #000;
+    background: #121217;
 }
 
 .directory-container {
@@ -424,16 +441,17 @@ body {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     margin-bottom: 16px;
-    font-family: monospace;
-    font-size: 13px;
+    font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
     color: var(--accent);
 }
 
 .directory-tree {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    background: var(--card);
+    border-radius: 12px;
     padding: 16px;
     min-height: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
 }
 
 .loading,
@@ -441,7 +459,7 @@ body {
     text-align: center;
     padding: 32px;
     color: var(--muted);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .file-list {
@@ -467,16 +485,17 @@ body {
     padding: 8px 12px;
     background: none;
     border: none;
-    color: #e6eef6;
+    color: #ffffff;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s;
+    border-radius: 8px;
+    transition: transform 0.125s ease-in-out, background 0.125s ease-in-out;
     text-align: left;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .file-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.0625);
 }
 
 .file-btn.folder .arrow {
@@ -511,5 +530,5 @@ body {
 }
 
 .error-sub {
-    color: #ff6b6b;
+    color: #ec3750;
 }
