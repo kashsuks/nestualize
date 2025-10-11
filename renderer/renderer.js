@@ -1,3 +1,5 @@
+// START OF STARTUP CODE AND ACTION ITEMS THAT ARE TO BE COMPLETED IMMEDIATELY
+
 window.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('startup-overlay')
 
@@ -10,22 +12,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 800)
     }, 3000)
 })
-
-const { Terminal } = window;
-const term = new Terminal({ cols: 80, rows: 24 })
-const wrap = document.getElementById('termWrap')
-const userIn = document.getElementById('user')
-const btnSave = document.getElementById('btnSave')
-const btnStart = document.getElementById('btnStart')
-const btnRefresh = document.getElementById('btnRefresh')
-
-let isConnected = false
-let currentPath = '~'
-
-term.open(wrap)
-term.focus()
-
-console.log('terminal init complete')
 
 function checkFirstTime() {
     window.nestApi.loadConfig().then(config => {
@@ -63,6 +49,24 @@ function dismissTutorial() {
         window.nestApi.saveConfig(config)
     })
 }
+
+// END OF STARTUP CODE AND ACTION ITEMS THAT ARE TO BE COMPLETED IMMEDIATELY
+
+const { Terminal } = window;
+const term = new Terminal({ cols: 80, rows: 24 })
+const wrap = document.getElementById('termWrap')
+const userIn = document.getElementById('user')
+const btnSave = document.getElementById('btnSave')
+const btnStart = document.getElementById('btnStart')
+const btnRefresh = document.getElementById('btnRefresh')
+
+let isConnected = false
+let currentPath = '~'
+
+term.open(wrap)
+term.focus()
+
+console.log('terminal init complete')
 
 //sidebar
 const sidebar = document.getElementById('sidebar')
