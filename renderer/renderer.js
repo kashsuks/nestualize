@@ -6,6 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             overlay.classList.remove('active')
             overlay.style.display = 'none'
+            checkFirstTime()
         }, 800)
     }, 3000)
 })
@@ -25,6 +26,43 @@ term.open(wrap)
 term.focus()
 
 console.log('terminal init complete')
+
+function checkFirstTime() {
+    window.nestApi.loadConfig().then(config => {
+        if (!config.hasSeenTutorial) {
+            showTutorial()
+        }
+    })
+}
+
+function showTutorial() {
+    const tutorialOverlay = document.getElementById('tutorial-overlay')
+    const racoon = document.getElementById('tutorial-raccoon')
+
+    tutorialOverlay.classList.add('active')
+
+    racoon.addEventListener('click', () => {
+        const bubble = document.getElementById('tutorial-bubble')
+        bubble.classList.add('active')
+    })
+}
+
+function startGuide() {
+    console.log('starting guide')
+}
+
+function dismissTutorial() {
+    const tutorialOverlay = document.getElementById('tutorial-overlay')
+    const bubble = document.getElementById('tutorial-bubble')
+
+    bubble.classList.remove('active')
+    tutorialOverlay.classList.remove('active')
+
+    window.nestApi.loadConfig().then(config => {
+        config.hasSeenTutorial = true
+        window.nestApi.saveConfig(config)
+    })
+}
 
 //sidebar
 const sidebar = document.getElementById('sidebar')

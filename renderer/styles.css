@@ -532,3 +532,153 @@ body {
 .error-sub {
     color: #ec3750;
 }
+
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 8888;
+    display: none;
+    pointer-events: none;
+}
+
+.tutorial-overlay.active {
+    display: block;
+    pointer-events: all;
+}
+
+.tutorial-raccoon {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 80px;
+    height: 80px;
+    background: #ec3750;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 0 rgba(236, 55, 80, 1);
+    animation: pulse-ring 2s infinite;
+    cursor: pointer;
+    z-index: 9999;
+    transition: transform 0.125s ease-in-out;
+}
+
+.tutorial-racoon:hover {
+    transform: scale(1.1);
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(236, 55, 80, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 0 20px rgba(236, 55, 80, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(236, 55, 80, 0);
+    }
+}
+
+.raccoon-icon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.tutorial-bubble {
+    position: fixed;
+    bottom: 130px;
+    right: 32px;
+    background: #252429;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 320px;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tutorial-bubble.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.tutorial-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 24px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #252429;
+}
+
+.bubble-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.bubble-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bubble-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.125s ease-in-out, box-shadow 0.125s ease-in-out;
+    font-family: "Phantom Sans", system-ui, sans-serif;
+}
+
+.bubble-btn.primary {
+    background: #ec3750;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
+}
+
+.bubble-btn.primary:hover {
+    transform: scale(1.0625);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.0625), 0 8px 12px rgba(0, 0, 0, 0.125);
+}
+
+.bubble-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #8492a6;
+}
+
+.bubble-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}

@@ -1,8 +1,16 @@
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 
-function getPath(app) {
-    return path.join(app.getPath('userData'), 'nest-config.json')
+function getPath() {
+    const homeDir = os.homedir()
+    const nestDir = path.join(homeDir, '.nestualize')
+    
+    if (!fs.existsSync(nestDir)) {
+        fs.mkdirSync(nestDir, { recursive: true })
+    }
+    
+    return path.join(nestDir, 'config.json')
 }
 
 function readCfg(file) {
@@ -14,7 +22,7 @@ function writeCfg(file, data) {
 }
 
 module.exports.init = (ipcMain, app) => {
-    const file = getPath(app)
+    const file = getPath()
     ipcMain.handle('cfg-load', () => readCfg(file))
     ipcMain.handle('cfg-save', (e, d) => { writeCfg(file, d); return { ok: true } })
 }
