@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const cfg = require('./events/config')
 const conn = require('./events/connect')
+const services = require('./events/server')
 
 function createMain() {
     const win = new BrowserWindow({
@@ -19,6 +20,7 @@ function createMain() {
 app.whenReady().then(() => {
     cfg.init(ipcMain, app)
     conn.init(ipcMain, app)
+    services.init(ipcMain)
     createMain()
     app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createMain() })
 })
