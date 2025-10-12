@@ -7,5 +7,10 @@ contextBridge.exposeInMainWorld('nestApi', {
     sendInput: (txt) => ipcRenderer.send('pty-input', txt),
     onData: (cb) => ipcRenderer.on('pty-data', (e, d) => cb(d)),
     resize: (cols, rows) => ipcRenderer.invoke('pty-resize', { cols, rows }),
-    getDirectory: (path) => ipcRenderer.invoke('get-directory', path)
+    getDirectory: (path) => ipcRenderer.invoke('get-directory', path),
+    listServices: () => ipcRenderer.invoke('get-directory', path),
+    getServiceStatus: (name) => ipcRenderer.invoke('service-status', name),
+    startService: (name) => ipcRenderer.invoke('service-start', name),
+    stopService: (name) => ipcRenderer.invoke('service-stop', name),
+    restartService: (name) => ipcRenderer.invoke('service-restart', name)
 })
