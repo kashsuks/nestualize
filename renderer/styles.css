@@ -568,7 +568,7 @@ body {
     transition: transform 0.125s ease-in-out;
 }
 
-.tutorial-racoon:hover {
+.tutorial-raccoon:hover {
     transform: scale(1.1);
 }
 
@@ -681,4 +681,35 @@ body {
 .bubble-btn.secondary:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
+}
+
+.bubble-text {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: #8492a6;
+    line-height: 1.5;
+}
+
+.bubble-steps {
+    margin: 0 0 16px 0;
+}
+
+.bubble-step {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.bubble-step strong {
+    color: #ec3750;
+}
+
+.bubble-step a {
+    color: #5bc0de;
+    text-decoration: none;
+}
+
+.bubble-step a:hover {
+    text-decoration: underline;
 }

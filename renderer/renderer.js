@@ -34,7 +34,8 @@ function showTutorial() {
 }
 
 function startGuide() {
-    console.log('starting guide')
+    const bubble = document.getElementById('tutorial-bubble')
+    bubble.innerHTML = '<p class="bubble-title">Do you have a Nest account?</p><div class="bubble-actions"><button onclick="hasAccount()" class="bubble-btn primary">Yes</button><button onclick="noAccount()" class="bubble-btn secondary">No</button></div>'
 }
 
 function dismissTutorial() {
@@ -67,6 +68,38 @@ term.open(wrap)
 term.focus()
 
 console.log('terminal init complete')
+
+// START OF HELPER FUNCTIONS
+
+function hasAccount() {
+    const bubble = document.getElementById('tutorial-bubble')
+    bubble.innerHTML = '<p class="bubble-title">Great! Let\'s continue</p><p class="bubble-text">You\'re all set to start using Nestualize. Click below to finish the tutorial.</p><div class="bubble-actions"><button onclick="dismissTutorial()" class="bubble-btn primary">Finish</button></div>'
+}
+
+function noAccount() {
+    const bubble = document.getElementById('tutorial-bubble')
+    bubble.innerHTML = '<p class="bubble-title">Setting up Nest</p><div class="bubble-steps"><p class="bubble-step"><strong>Step 1:</strong> Join the Hack Club Slack at <a href="https://hackclub.com/slack" target="_blank">hackclub.com/slack</a></p><p class="bubble-step"><strong>Step 2:</strong> Send a DM to @quetzal on Slack asking for a Nest account</p><p class="bubble-step"><strong>Step 3:</strong> They will provide you with your hash and account details</p></div><div class="bubble-actions"><button onclick="testSSH()" class="bubble-btn primary">I have my account, test SSH</button><button onclick="dismissTutorial()" class="bubble-btn secondary">I\'ll do this later</button></div>'
+}
+
+function testSSH() {
+    const bubble = document.getElementById('tutorial-bubble')
+    bubble.innerHTML = '<p class="bubble-title">Test your SSH connection</p><p class="bubble-text">Enter your Nest username in the input field at the top and click "Start Nest" to test your connection.</p><div class="bubble-actions"><button onclick="dismissTutorial()" class="bubble-btn primary">Got it!</button></div>'
+
+    document.querySelector('[data-view="terminal"]').click()
+}
+
+function dismissTutorial() {
+    const tutorialOverlay = document.getElementById('tutorial-overlay')
+    const bubble = document.getElementById('tutorial-bubble')
+
+    bubble.classList.remove('active')
+    tutorialOverlay.classList.remove('active')
+
+    window.nestApi.loadConfig().then(config => {
+        config.hasSeenTutorial = true
+        window.nestApi.saveConfig(config)
+    })
+}
 
 //sidebar
 const sidebar = document.getElementById('sidebar')
