@@ -186,9 +186,9 @@ module.exports.init = (ipcMain, app) => {
             .map(l => l.trim())
             .filter(l => {
                 return l && 
-                       l.length > 0 &&
-                       !l.startsWith('ls ') &&
-                       !l.includes('cannot access')
+                    l.length > 0 &&
+                    !l.startsWith('ls ') &&
+                    !l.includes('cannot access')
             })
 
         const promptIndex = lines.findIndex(l => l.includes('$') || l.includes('#') || l.includes('@nest'))
@@ -197,7 +197,9 @@ module.exports.init = (ipcMain, app) => {
         const services = relevantLines
             .filter(line => line.endsWith('.service'))
             .map(line => {
-                const name = line.replace('.service', '')
+                const parts = line.split('/')
+                const filename = parts[parts.length - 1]
+                const name = filename.replace('.service', '')
                 return {
                     name: name,
                     description: 'Systemd service',

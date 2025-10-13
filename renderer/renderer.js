@@ -254,8 +254,31 @@ function createServiceCard(service, container) {
     card.appendChild(actions)
 
     container.appendChild(card)
+}
 
-    updateServiceStatus(service.name)
+function loadServices() {
+    const container = document.getElementById('servicesContainer')
+    container.innerHTML = '<div class="loading">Loading services...</div>'
+
+    window.nestApi.listServices().then(result => {
+        if (result.error) {
+            container.innerHTML = '<div class="empty">Error loading services: ' + result.error + '</div>'
+            return
+        }
+
+        if (result.services.length === 0) {
+            container.innerHTML = '<div class="empty">No services found</div>'
+            return
+        }
+
+        container.innerHTML = ''
+        result.services.forEach((service, index) => {
+            createServiceCard(service, container)
+            setTimeout(() => {
+                updateServiceStatus(service.name)
+            }, index * 500)
+        })
+    })
 }
 
 function updateServiceStatus(serviceName) {
