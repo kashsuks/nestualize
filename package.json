@@ -19,6 +19,6 @@
   "devDependencies": {
     "@electron/rebuild": "^4.0.1",
     "@next/mdx": "^15.5.4",
-    "electron": "^29.0.0"
+    "electron": "^35.7.5"
   }
 }
