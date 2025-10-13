@@ -59,6 +59,10 @@
                     <span class="nav-icon">📁</span>
                     <span class="nav-text">Directory</span>
                 </button>
+                <button class="nav-item" data-view="services">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Services</span>
+                </button>
             </nav>
         </aside>
 
@@ -94,6 +98,18 @@
                     <div class="directory-tree" id="directoryTree">
                         <div class="loading">Connect to view directory structure</div>
                     </div>
+                </div>
+            </div>
+
+            <div class="view-container" id="view-services">
+                <header class="bar">
+                    <h1 class="title">Services Manager</h1>
+                    <div class="controls">
+                        <button id="btnRefreshServices">Refresh</button>
+                    </div>
+                </header>
+                <div class="services-container" id="servicesContainer">
+                    <div class="loading">Loading services</div>
                 </div>
             </div>
         </div>

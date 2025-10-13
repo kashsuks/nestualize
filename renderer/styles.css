@@ -682,3 +682,118 @@ body {
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
 }
+
+.services-container {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minimax(300px, 1fr));
+    gap: 16px;
+    align-content: start;
+}
+
+.service-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
+    transition: transform 0.125s ease-in-out, box-shadow 0.125s ease-in-out;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.service-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.service-status {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse-status 2s infinite;
+}
+
+.service-status.active {
+    background: #33d6a6;
+    box-shadow: 0 0 8px rgba(51, 214, 166, 0.5);
+}
+
+.service-status.inactive {
+    background: #ec3750;
+    box-shadow: 0 0 8px rgba(236, 55, 80, 0.5);
+}
+
+.service-status.unknown {
+    background: #8492a6;
+}
+
+@keyframes pulse-status {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.service-description {
+    font-size: 14px;
+    color: #8492a6;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.service-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.service-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: transform 0.125s ease-in-out, opacity 0.125s ease-in-out;
+    font-family: "Phantom Sans", system-ui, sans-serif;
+}
+
+.service-btn:hover {
+    transform: scale(1.05);
+}
+
+.service-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.service-btn.start {
+    background: #33d6a6;
+    color: #17171d;
+}
+
+.service-btn.stop {
+    background: #ec3750;
+    color: white;
+}
+
+.service-btn.restart {
+    background: #5bc0de;
+    color: white;
+}

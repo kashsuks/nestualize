@@ -10,7 +10,7 @@ function createMain() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
-            nodeIntegraion: false
+            nodeIntegration: false
         }
     })
     win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
