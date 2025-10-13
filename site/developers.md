@@ -9,3 +9,7 @@ Once again I would like to thank you for taking time to look at this project. My
 You clearly know what you're doing (hopefully) and if you see an issue that I missed, a bug, an improvement, anything that could be fixed, you are free to contribute to this project.
 
 Here is some context on how this project works file by file.
+
+## Documentation
+
+The documentation, the exact file that you are reading now is built using [MkDocs](https://www.mkdocs.org/). Its a Jekyll theme that I've been using for over a year on almost every project. Its simple, looks good, and is (somewhat) customizable.
