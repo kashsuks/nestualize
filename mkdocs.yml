@@ -1,1 +1,11 @@
 site_name: Nestualize
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - Contribute: contribute.md
+  - Developers: developers.md
+  - License: license.md
+
+docs_dir: site
+site_dir: docs
