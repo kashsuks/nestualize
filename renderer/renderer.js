@@ -178,6 +178,8 @@ function resizeTerm() {
 window.addEventListener('resize', () => { term.fit && term.fit(); resizeTerm() })
 
 const btnRefreshServices = document.getElementById('btnRefreshServices')
+let statusCheckQueue = []
+let isCheckingStatus = false
 
 btnRefreshServices.addEventListener('click', () => {
     loadServices()
@@ -199,9 +201,29 @@ function loadServices() {
         }
 
         container.innerHTML = ''
+        statusCheckQueue = []
         result.services.forEach(service => {
             createServiceCard(service, container)
+            statusCheckQueue.push(service.name)
         })
+        processStatusQueue()
+    })
+}
+
+function processStatusQueue() {
+    if (statusCheckQueue.length === 0 || isCheckingStatus) {
+        return
+    }
+    
+    isCheckingStatus = true
+    const serviceName = statusCheckQueue.shift()
+    
+    console.log('Processing status for:', serviceName)
+    updateServiceStatus(serviceName).then(() => {
+        isCheckingStatus = false
+        if (statusCheckQueue.length > 0) {
+            setTimeout(() => processStatusQueue(), 500)
+        }
     })
 }
 
@@ -256,37 +278,18 @@ function createServiceCard(service, container) {
     container.appendChild(card)
 }
 
-function loadServices() {
-    const container = document.getElementById('servicesContainer')
-    container.innerHTML = '<div class="loading">Loading services...</div>'
-
-    window.nestApi.listServices().then(result => {
-        if (result.error) {
-            container.innerHTML = '<div class="empty">Error loading services: ' + result.error + '</div>'
-            return
-        }
-
-        if (result.services.length === 0) {
-            container.innerHTML = '<div class="empty">No services found</div>'
-            return
-        }
-
-        container.innerHTML = ''
-        result.services.forEach((service, index) => {
-            createServiceCard(service, container)
-            setTimeout(() => {
-                updateServiceStatus(service.name)
-            }, index * 500)
-        })
-    })
-}
-
 function updateServiceStatus(serviceName) {
-    window.nestApi.getServiceStatus(serviceName).then(result => {
+    return window.nestApi.getServiceStatus(serviceName).then(result => {
+        console.log('Status update for', serviceName, ':', result.status)
         const statusDot = document.querySelector('.service-status[data-service-name="' + serviceName + '"]')
         if (statusDot) {
             statusDot.className = 'service-status ' + result.status
+            console.log('Updated UI for', serviceName, 'to', result.status)
+        } else {
+            console.error('Status dot not found for service:', serviceName)
         }
+    }).catch(error => {
+        console.error('Error updating status for', serviceName, ':', error)
     })
 }
 
@@ -306,7 +309,11 @@ function handleServiceAction(action, serviceName, card) {
     promise.then(result => {
         buttons.forEach(btn => btn.disabled = false)
         if (result.success) {
-            setTimeout(() => updateServiceStatus(serviceName), 500)
+            setTimeout(() => {
+                statusCheckQueue = [serviceName]
+                isCheckingStatus = false
+                processStatusQueue()
+            }, 3000)
         } else {
             console.error('Service action failed:', result.error)
         }

@@ -73,10 +73,12 @@ module.exports.init = (ipcMain, app) => {
                 }
             } else if (isCapturingServiceCommand) {
                 serviceCommandOutput += d
+                console.log('Capturing service command data:', JSON.stringify(d))
                 
-                if (d.includes('$') || d.includes('#')) {
+                if (d.includes('$') || d.includes('#') || d.includes('@nest')) {
                     setTimeout(() => {
                         if (isCapturingServiceCommand) {
+                            console.log('Prompt detected, processing service command output')
                             isCapturingServiceCommand = false
                             processServiceCommandOutput()
                         }
@@ -303,14 +305,26 @@ module.exports.init = (ipcMain, app) => {
 
         return new Promise((resolve) => {
             serviceCommandCallbacks.push((result) => {
-                const output = result.output.toLowerCase()
-                if (output.includes('active')) {
-                    resolve({ status: 'active' })
-                } else if (output.includes('inactive') || output.includes('failed')) {
-                    resolve({ status: 'inactive' })
-                } else {
-                    resolve({ status: 'unknown' })
+                const rawOutput = result.output.toLowerCase().trim()
+                console.log('Service status check for', serviceName, '- raw output:', JSON.stringify(result.output))
+                
+                const lines = rawOutput.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 0)
+                let status = 'unknown'
+                
+                for (const line of lines) {
+                    if (line === 'active') {
+                        status = 'active'
+                        break
+                    } else if (line === 'inactive' || line === 'failed') {
+                        status = 'inactive'
+                        break
+                    }
                 }
+                
+                console.log('Service status check for', serviceName, '- extracted status:', status)
+                console.log('Service status check for', serviceName, '- from lines:', lines)
+                
+                resolve({ status: status })
             })
             
             isCapturingServiceCommand = true
@@ -321,13 +335,19 @@ module.exports.init = (ipcMain, app) => {
 
             setTimeout(() => {
                 if (isCapturingServiceCommand) {
+                    console.log('Service command timeout for', serviceName, 'captured output:', JSON.stringify(serviceCommandOutput))
                     isCapturingServiceCommand = false
                     if (serviceCommandCallbacks.length > 0) {
                         const callback = serviceCommandCallbacks.shift()
-                        callback({ output: '' })
+                        if (serviceCommandOutput.trim()) {
+                            processServiceCommandOutput()
+                        } else {
+                            console.log('No output captured for', serviceName, 'returning unknown')
+                            callback({ output: '' })
+                        }
                     }
                 }
-            }, 2000)
+            }, 3000)
         })
     })
 
@@ -355,7 +375,7 @@ module.exports.init = (ipcMain, app) => {
                     }
                     resolve({ success: true })
                 }
-            }, 2000)
+            }, 3000)
         })
     })
 
@@ -383,7 +403,7 @@ module.exports.init = (ipcMain, app) => {
                     }
                     resolve({ success: true })
                 }
-            }, 2000)
+            }, 3000)
         })
     })
 
@@ -411,7 +431,7 @@ module.exports.init = (ipcMain, app) => {
                     }
                     resolve({ success: true })
                 }
-            }, 2000)
+            }, 3000)
         })
     })
 }
