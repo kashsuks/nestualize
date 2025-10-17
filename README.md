@@ -1,3 +1,5 @@
+[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
+
 # nestualize
 Visualize Hack Club Nest
 
