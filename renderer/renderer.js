@@ -177,6 +177,7 @@ function resizeTerm() {
 
 window.addEventListener('resize', () => { term.fit && term.fit(); resizeTerm() })
 
+// Services Manager
 const btnRefreshServices = document.getElementById('btnRefreshServices')
 let statusCheckQueue = []
 let isCheckingStatus = false
@@ -320,6 +321,171 @@ function handleServiceAction(action, serviceName, card) {
     })
 }
 
+// Timers Manager
+const btnRefreshTimers = document.getElementById('btnRefreshTimers')
+let timerStatusQueue = []
+let isCheckingTimerStatus = false
+
+btnRefreshTimers.addEventListener('click', () => {
+    loadTimers()
+})
+
+function loadTimers() {
+    const container = document.getElementById('timersContainer')
+    container.innerHTML = '<div class="loading">Loading timers...</div>'
+
+    window.nestApi.listTimers().then(result => {
+        if (result.error) {
+            container.innerHTML = '<div class="empty">Error loading timers: ' + result.error + '</div>'
+            return
+        }
+
+        if (result.timers.length === 0) {
+            container.innerHTML = '<div class="empty">No timers found</div>'
+            return
+        }
+
+        container.innerHTML = ''
+        timerStatusQueue = []
+        result.timers.forEach(timer => {
+            createTimerCard(timer, container)
+            timerStatusQueue.push(timer.name)
+        })
+        processTimerStatusQueue()
+    })
+}
+
+function processTimerStatusQueue() {
+    if (timerStatusQueue.length === 0 || isCheckingTimerStatus) {
+        return
+    }
+    
+    isCheckingTimerStatus = true
+    const timerName = timerStatusQueue.shift()
+    
+    console.log('Processing timer status for:', timerName)
+    updateTimerStatus(timerName).then(() => {
+        isCheckingTimerStatus = false
+        if (timerStatusQueue.length > 0) {
+            setTimeout(() => processTimerStatusQueue(), 500)
+        }
+    })
+}
+
+function createTimerCard(timer, container) {
+    const card = document.createElement('div')
+    card.className = 'timer-card'
+
+    const header = document.createElement('div')
+    header.className = 'timer-header'
+
+    const name = document.createElement('h3')
+    name.className = 'timer-name'
+    name.textContent = timer.name
+
+    const status = document.createElement('div')
+    status.className = 'timer-status unknown'
+    status.dataset.timerName = timer.name
+
+    header.appendChild(name)
+    header.appendChild(status)
+
+    const info = document.createElement('div')
+    info.className = 'timer-info'
+    info.dataset.timerName = timer.name
+    info.innerHTML = '<div class="timer-detail"><span class="timer-label">Next Trigger:</span> <span class="timer-value">-</span></div><div class="timer-detail"><span class="timer-label">Activates:</span> <span class="timer-unit">-</span></div>'
+
+    const actions = document.createElement('div')
+    actions.className = 'timer-actions'
+
+    const startBtn = document.createElement('button')
+    startBtn.className = 'timer-btn start'
+    startBtn.textContent = 'Start'
+    startBtn.onclick = () => handleTimerAction('start', timer.name, card)
+
+    const stopBtn = document.createElement('button')
+    stopBtn.className = 'timer-btn stop'
+    stopBtn.textContent = 'Stop'
+    stopBtn.onclick = () => handleTimerAction('stop', timer.name, card)
+
+    const enableBtn = document.createElement('button')
+    enableBtn.className = 'timer-btn enable'
+    enableBtn.textContent = 'Enable'
+    enableBtn.onclick = () => handleTimerAction('enable', timer.name, card)
+
+    const disableBtn = document.createElement('button')
+    disableBtn.className = 'timer-btn disable'
+    disableBtn.textContent = 'Disable'
+    disableBtn.onclick = () => handleTimerAction('disable', timer.name, card)
+
+    actions.appendChild(startBtn)
+    actions.appendChild(stopBtn)
+    actions.appendChild(enableBtn)
+    actions.appendChild(disableBtn)
+
+    card.appendChild(header)
+    card.appendChild(info)
+    card.appendChild(actions)
+
+    container.appendChild(card)
+}
+
+function updateTimerStatus(timerName) {
+    return window.nestApi.getTimerStatus(timerName).then(result => {
+        console.log('Timer status update for', timerName, ':', result)
+        
+        const statusDot = document.querySelector('.timer-status[data-timer-name="' + timerName + '"]')
+        if (statusDot) {
+            statusDot.className = 'timer-status ' + (result.nextTrigger ? 'active' : 'inactive')
+        }
+        
+        const info = document.querySelector('.timer-info[data-timer-name="' + timerName + '"]')
+        if (info) {
+            const valueSpan = info.querySelector('.timer-value')
+            const unitSpan = info.querySelector('.timer-unit')
+            
+            if (valueSpan) {
+                valueSpan.textContent = result.nextTrigger || 'Not scheduled'
+            }
+            if (unitSpan) {
+                unitSpan.textContent = result.unit || 'None'
+            }
+        }
+    }).catch(error => {
+        console.error('Error updating timer status for', timerName, ':', error)
+    })
+}
+
+function handleTimerAction(action, timerName, card) {
+    const buttons = card.querySelectorAll('.timer-btn')
+    buttons.forEach(btn => btn.disabled = true)
+    
+    let promise
+    if (action === 'start') {
+        promise = window.nestApi.startTimer(timerName)
+    } else if (action === 'stop') {
+        promise = window.nestApi.stopTimer(timerName)
+    } else if (action === 'enable') {
+        promise = window.nestApi.enableTimer(timerName)
+    } else if (action === 'disable') {
+        promise = window.nestApi.disableTimer(timerName)
+    }
+    
+    promise.then(result => {
+        buttons.forEach(btn => btn.disabled = false)
+        if (result.success) {
+            setTimeout(() => {
+                timerStatusQueue = [timerName]
+                isCheckingTimerStatus = false
+                processTimerStatusQueue()
+            }, 3000)
+        } else {
+            console.error('Timer action failed:', result.error)
+        }
+    })
+}
+
+// Directory Explorer
 btnRefresh.addEventListener('click', () => {
     if (!isConnected) {
         showDirectoryMessage('Please connect to SSH first')

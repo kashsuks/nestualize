@@ -63,6 +63,10 @@
                     <span class="nav-icon">⚙️</span>
                     <span class="nav-text">Services</span>
                 </button>
+                <button class="nav-item" data-view="timers">
+                    <span class="nav-icon">⏰</span>
+                    <span class="nav-text">Timers</span>
+                </button>
             </nav>
         </aside>
 
@@ -110,6 +114,18 @@
                 </header>
                 <div class="services-container" id="servicesContainer">
                     <div class="loading">Loading services</div>
+                </div>
+            </div>
+
+            <div class="view-container" id="view-timers">
+                <header class="bar">
+                    <h1 class="title">Timers Manager</h1>
+                    <div class="controls">
+                        <button id="btnRefreshTimers">Refresh</button>
+                    </div>
+                </header>
+                <div class="timers-container" id="timersContainer">
+                    <div class="loading">Loading timers</div>
                 </div>
             </div>
         </div>

@@ -4,12 +4,18 @@ const pty = require('node-pty')
 let termProc = null
 let directoryCallbacks = []
 let servicesCallbacks = []
+let timersCallbacks = []
+let timerStatusCallbacks = []
 let serviceCommandCallbacks = []
 let isCapturingDirectory = false
 let isCapturingServices = false
+let isCapturingTimers = false
+let isCapturingTimerStatus = false
 let isCapturingServiceCommand = false
 let directoryOutput = ''
 let servicesOutput = ''
+let timersOutput = ''
+let timerStatusOutput = ''
 let serviceCommandOutput = ''
 
 function stripAnsi(str) {
@@ -68,6 +74,28 @@ module.exports.init = (ipcMain, app) => {
                         if (isCapturingServices) {
                             isCapturingServices = false
                             processServicesOutput()
+                        }
+                    }, 200)
+                }
+            } else if (isCapturingTimers) {
+                timersOutput += d
+                
+                if (d.includes('$') || d.includes('#')) {
+                    setTimeout(() => {
+                        if (isCapturingTimers) {
+                            isCapturingTimers = false
+                            processTimersOutput()
+                        }
+                    }, 200)
+                }
+            } else if (isCapturingTimerStatus) {
+                timerStatusOutput += d
+                
+                if (d.includes('$') || d.includes('#') || d.includes('@nest')) {
+                    setTimeout(() => {
+                        if (isCapturingTimerStatus) {
+                            isCapturingTimerStatus = false
+                            processTimerStatusOutput()
                         }
                     }, 200)
                 }
@@ -214,6 +242,76 @@ module.exports.init = (ipcMain, app) => {
         servicesOutput = ''
     }
 
+    function processTimersOutput() {
+        if (timersCallbacks.length === 0) return
+
+        const callback = timersCallbacks.shift()
+        
+        const cleanOutput = stripAnsi(timersOutput)
+        console.log('Timers clean output:', cleanOutput)
+        
+        const lines = cleanOutput
+            .split(/[\r\n]+/)
+            .map(l => l.trim())
+            .filter(l => {
+                return l && 
+                    l.length > 0 &&
+                    !l.startsWith('ls ') &&
+                    !l.includes('cannot access')
+            })
+
+        const promptIndex = lines.findIndex(l => l.includes('$') || l.includes('#') || l.includes('@nest'))
+        const relevantLines = promptIndex >= 0 ? lines.slice(0, promptIndex) : lines
+
+        const timers = relevantLines
+            .filter(line => line.endsWith('.timer'))
+            .map(line => {
+                const parts = line.split('/')
+                const filename = parts[parts.length - 1]
+                const name = filename.replace('.timer', '')
+                return {
+                    name: name,
+                    description: 'Systemd timer',
+                    status: 'unknown',
+                    nextTrigger: null,
+                    unit: null
+                }
+            })
+
+        console.log('Parsed timers:', timers)
+        callback({ timers })
+        timersOutput = ''
+    }
+
+    function processTimerStatusOutput() {
+        if (timerStatusCallbacks.length === 0) return
+
+        const callback = timerStatusCallbacks.shift()
+        
+        const cleanOutput = stripAnsi(timerStatusOutput)
+        console.log('Timer status output:', cleanOutput)
+        
+        // Parse timer details from systemctl list-timers output
+        const lines = cleanOutput.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 0)
+        
+        let nextTrigger = null
+        let unit = null
+        
+        for (const line of lines) {
+            // Look for lines containing time information
+            if (line.match(/\d+h|\d+min|\d+s|Mon|Tue|Wed|Thu|Fri|Sat|Sun/i)) {
+                const parts = line.split(/\s+/)
+                if (parts.length >= 2) {
+                    nextTrigger = parts.slice(0, -1).join(' ')
+                    unit = parts[parts.length - 1]
+                }
+            }
+        }
+        
+        callback({ nextTrigger, unit })
+        timerStatusOutput = ''
+    }
+
     function processServiceCommandOutput() {
         if (serviceCommandCallbacks.length === 0) return
 
@@ -278,7 +376,7 @@ module.exports.init = (ipcMain, app) => {
             isCapturingServices = true
             servicesOutput = ''
 
-            const cmd = 'ls ~/.config/systemd/user/*.service\n'
+            const cmd = 'ls ~/.config/systemd/user/*.service 2>/dev/null\n'
             console.log('Sending services list command:', cmd.trim())
             termProc.write(cmd)
 
@@ -292,6 +390,68 @@ module.exports.init = (ipcMain, app) => {
                         processServicesOutput()
                     } else {
                         callback({ error: 'Timeout or no services found', services: [] })
+                    }
+                }
+            }, 3000)
+        })
+    })
+
+    ipcMain.handle('timers-list', async () => {
+        if (!termProc) {
+            return { error: 'No active SSH connection', timers: [] }
+        }
+
+        return new Promise((resolve) => {
+            timersCallbacks.push(resolve)
+            
+            isCapturingTimers = true
+            timersOutput = ''
+
+            const cmd = 'ls ~/.config/systemd/user/*.timer 2>/dev/null\n'
+            console.log('Sending timers list command:', cmd.trim())
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingTimers && timersCallbacks.length > 0) {
+                    console.log('Timers listing timeout')
+                    isCapturingTimers = false
+                    const callback = timersCallbacks.shift()
+                    
+                    if (timersOutput.trim().length > 0) {
+                        processTimersOutput()
+                    } else {
+                        callback({ error: 'Timeout or no timers found', timers: [] })
+                    }
+                }
+            }, 3000)
+        })
+    })
+
+    ipcMain.handle('timer-status', async (e, timerName) => {
+        if (!termProc) {
+            return { nextTrigger: null, unit: null }
+        }
+
+        return new Promise((resolve) => {
+            timerStatusCallbacks.push(resolve)
+            
+            isCapturingTimerStatus = true
+            timerStatusOutput = ''
+
+            const cmd = 'systemctl --user list-timers ' + timerName + '.timer 2>/dev/null | grep "' + timerName + '"\n'
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingTimerStatus) {
+                    console.log('Timer status timeout for', timerName)
+                    isCapturingTimerStatus = false
+                    if (timerStatusCallbacks.length > 0) {
+                        const callback = timerStatusCallbacks.shift()
+                        if (timerStatusOutput.trim()) {
+                            processTimerStatusOutput()
+                        } else {
+                            callback({ nextTrigger: null, unit: null })
+                        }
                     }
                 }
             }, 3000)
@@ -322,7 +482,6 @@ module.exports.init = (ipcMain, app) => {
                 }
                 
                 console.log('Service status check for', serviceName, '- extracted status:', status)
-                console.log('Service status check for', serviceName, '- from lines:', lines)
                 
                 resolve({ status: status })
             })
@@ -335,14 +494,13 @@ module.exports.init = (ipcMain, app) => {
 
             setTimeout(() => {
                 if (isCapturingServiceCommand) {
-                    console.log('Service command timeout for', serviceName, 'captured output:', JSON.stringify(serviceCommandOutput))
+                    console.log('Service command timeout for', serviceName)
                     isCapturingServiceCommand = false
                     if (serviceCommandCallbacks.length > 0) {
                         const callback = serviceCommandCallbacks.shift()
                         if (serviceCommandOutput.trim()) {
                             processServiceCommandOutput()
                         } else {
-                            console.log('No output captured for', serviceName, 'returning unknown')
                             callback({ output: '' })
                         }
                     }
@@ -421,6 +579,119 @@ module.exports.init = (ipcMain, app) => {
             serviceCommandOutput = ''
 
             const cmd = 'systemctl --user restart ' + serviceName + '\n'
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingServiceCommand) {
+                    isCapturingServiceCommand = false
+                    if (serviceCommandCallbacks.length > 0) {
+                        serviceCommandCallbacks.shift()
+                    }
+                    resolve({ success: true })
+                }
+            }, 3000)
+        })
+    })
+
+    // Timer control handlers
+    ipcMain.handle('timer-start', async (e, timerName) => {
+        if (!termProc) {
+            return { success: false, error: 'Not connected' }
+        }
+
+        return new Promise((resolve) => {
+            serviceCommandCallbacks.push(() => {
+                resolve({ success: true })
+            })
+            
+            isCapturingServiceCommand = true
+            serviceCommandOutput = ''
+
+            const cmd = 'systemctl --user start ' + timerName + '.timer\n'
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingServiceCommand) {
+                    isCapturingServiceCommand = false
+                    if (serviceCommandCallbacks.length > 0) {
+                        serviceCommandCallbacks.shift()
+                    }
+                    resolve({ success: true })
+                }
+            }, 3000)
+        })
+    })
+
+    ipcMain.handle('timer-stop', async (e, timerName) => {
+        if (!termProc) {
+            return { success: false, error: 'Not connected' }
+        }
+
+        return new Promise((resolve) => {
+            serviceCommandCallbacks.push(() => {
+                resolve({ success: true })
+            })
+            
+            isCapturingServiceCommand = true
+            serviceCommandOutput = ''
+
+            const cmd = 'systemctl --user stop ' + timerName + '.timer\n'
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingServiceCommand) {
+                    isCapturingServiceCommand = false
+                    if (serviceCommandCallbacks.length > 0) {
+                        serviceCommandCallbacks.shift()
+                    }
+                    resolve({ success: true })
+                }
+            }, 3000)
+        })
+    })
+
+    ipcMain.handle('timer-enable', async (e, timerName) => {
+        if (!termProc) {
+            return { success: false, error: 'Not connected' }
+        }
+
+        return new Promise((resolve) => {
+            serviceCommandCallbacks.push(() => {
+                resolve({ success: true })
+            })
+            
+            isCapturingServiceCommand = true
+            serviceCommandOutput = ''
+
+            const cmd = 'systemctl --user enable --now ' + timerName + '.timer\n'
+            termProc.write(cmd)
+
+            setTimeout(() => {
+                if (isCapturingServiceCommand) {
+                    isCapturingServiceCommand = false
+                    if (serviceCommandCallbacks.length > 0) {
+                        serviceCommandCallbacks.shift()
+                    }
+                    resolve({ success: true })
+                }
+            }, 3000)
+        })
+    })
+
+    ipcMain.handle('timer-disable', async (e, timerName) => {
+        if (!termProc) {
+            return { success: false, error: 'Not connected' }
+        }
+
+        return new Promise((resolve) => {
+            serviceCommandCallbacks.push(() => {
+                resolve({ success: true })
+            })
+            
+            isCapturingServiceCommand = true
+            serviceCommandOutput = ''
+
+            const cmd = 'systemctl --user disable --now ' + timerName + '.timer\n'
             termProc.write(cmd)
 
             setTimeout(() => {
