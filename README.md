@@ -10,6 +10,7 @@ Desktop app that allows you to visualize Hack Club's free compute for teenagers,
 - SSH and access [Nest](https://hackclub.app) through a GUI
 - View files and folders
 - Create and manage `systemd` and `caddy` services
+- View user `timers`
 ## Run Locally
 
 Clone the project
