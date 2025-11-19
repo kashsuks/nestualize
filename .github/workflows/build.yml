@@ -1,8 +1,24 @@
-name: Build Electron App
+# This is a basic workflow that is manually triggered
 
+name: Build application
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
 on:
-  workflow-dispatch:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Building for mac, windows, linux'
+        # Default value if no value is explicitly provided
+        default: 'Build for patches'
+        # Input has to be provided for the workflow to run
+        required: true
+        # The data type of the input
+        type: string
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-mac:
     runs-on: macos-latest
